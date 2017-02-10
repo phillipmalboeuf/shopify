@@ -1,7 +1,7 @@
 from core import app
 from flask import request
 
-from core.tasks.search import search_index, search_delete
+# from core.tasks.search import search_index, search_delete
 
 from bson.objectid import ObjectId
 
@@ -73,7 +73,7 @@ with app.app_context():
 			document['_id'] = app.mongo.db[cls.collection_name].insert(document)
 
 
-			search_index.apply_async((cls.collection_name, document['_id'], document))
+			# search_index.apply_async((cls.collection_name, document['_id'], document))
 
 
 			return {'_id': document['_id']}
@@ -103,7 +103,8 @@ with app.app_context():
 				if document is None:
 					document = {}
 				else:
-					search_index.apply_async((cls.collection_name, document['_id'], document))
+					pass
+					# search_index.apply_async((cls.collection_name, document['_id'], document))
 
 				return cls.postprocess(document)
 
@@ -119,7 +120,7 @@ with app.app_context():
 		def delete(cls, _id):
 
 			app.mongo.db[cls.collection_name].delete_one({'_id': ObjectId(_id)})
-			search_delete.apply_async((cls.collection_name, _id))
+			# search_delete.apply_async((cls.collection_name, _id))
 
 
 			return {'_id': _id}
