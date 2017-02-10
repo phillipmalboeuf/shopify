@@ -47,7 +47,7 @@ app.caches = {}
 # from core.tasks.scheduled import scheduled_tasks
 # from core.tasks.search import search_index, search_delete
 
-# from core.helpers.verify_headers import *
+from core.helpers.verify_headers import *
 from core.helpers.access_control_origin import *
 
 
