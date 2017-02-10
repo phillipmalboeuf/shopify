@@ -39,13 +39,13 @@ app.caches = {}
 # )
 
 
-celery = Celery(app.import_name, broker=app.config['CELERY_BROKER_URL'])
-celery.config_from_object(app.config)
+# celery = Celery(app.import_name, broker=app.config['CELERY_BROKER_URL'])
+# celery.config_from_object(app.config)
 
-from core.tasks.execute import execute_task
-from core.tasks.trigger import trigger_tasks
-from core.tasks.scheduled import scheduled_tasks
-from core.tasks.search import search_index, search_delete
+# from core.tasks.execute import execute_task
+# from core.tasks.trigger import trigger_tasks
+# from core.tasks.scheduled import scheduled_tasks
+# from core.tasks.search import search_index, search_delete
 
 from core.helpers.verify_headers import *
 from core.helpers.access_control_origin import *
