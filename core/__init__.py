@@ -5,7 +5,7 @@ import sys
 
 from flask_pymongo import PyMongo
 
-from celery import Celery
+# from celery import Celery
 from elasticsearch import Elasticsearch, Urllib3HttpConnection
 # import certifi
 
