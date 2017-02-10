@@ -1,0 +1,11 @@
+environment
+*.pyc
+data
+mongodb
+*.pem
+config/environment_dev.py
+/.sass-cache
+/Design
+*.map
+*.db
+build
