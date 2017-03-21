@@ -7,8 +7,10 @@ from flask import request
 from bson.objectid import ObjectId
 from werkzeug import secure_filename
 
-import boto
 import mimetypes
+import boto
+
+from core.models.auth.drive import Drive
 
 
 
@@ -21,31 +23,29 @@ with app.app_context():
 			{
 				'route': '',
 				'view_function': 'upload_view',
-				'methods': ['POST'],
-				'requires_user': True
+				'methods': ['POST']
 			}
 		]
 
-
 		@classmethod
 		def upload_view(cls):
+			drive = Drive.get_where({'shop': request.form.get('shop')})
 			uploaded_file = request.files['file']
 
-			filename = secure_filename(uploaded_file.filename)
 			_id = str(ObjectId())
 
 			connection = boto.connect_s3(app.config['S3_ACCESS_KEY'], app.config['S3_SECRET_KEY'])
 			bucket = connection.get_bucket(app.config['S3_BUCKET'])
 
-			key = bucket.new_key('uploads/' + _id + '/' + filename)
-			key.set_contents_from_file(uploaded_file, headers={'Content-Type': mimetypes.guess_type(filename)[0]}, policy='public-read')
-
+			key = bucket.new_key('uploads/' + _id)
+			key.set_contents_from_file(uploaded_file, headers={}, policy='public-read')
 
 			return cls._format_response({
-				'url': 'uploads/'+_id+'/'+filename,
-				'file_name': filename
+				'_id': _id
 			})
 
+
+			
 
 
 
