@@ -1,6 +1,7 @@
 
 import os
 
+MAX_CONTENT_LENGTH = 16 * 1024 * 1024
 DEBUG = os.getenv('DEBUG', 'True')
 if DEBUG.lower() == 'true':
 	DEBUG = True
