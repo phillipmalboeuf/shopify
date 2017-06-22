@@ -34,7 +34,7 @@ with app.app_context():
 
 			_id = str(ObjectId())
 
-		connection = boto.s3.connect_to_region('ca-central-1', aws_access_key_id=app.config['S3_ACCESS_KEY'], aws_secret_access_key=app.config['S3_SECRET_KEY'])
+			connection = boto.s3.connect_to_region('ca-central-1', aws_access_key_id=app.config['S3_ACCESS_KEY'], aws_secret_access_key=app.config['S3_SECRET_KEY'])
 			bucket = connection.get_bucket(app.config['S3_BUCKET'])
 
 			key = bucket.new_key('uploads/' + _id)
