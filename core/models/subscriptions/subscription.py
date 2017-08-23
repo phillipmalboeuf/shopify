@@ -89,9 +89,10 @@ with app.app_context():
 
 			try:
 				if document['order_id']:
-					stripe.Subscription.create(
+					app.stripe.Subscription.create(
 						customer=document['stripe_id'],
 						items=document['plans'],
+						coupon='first-free',
 						metadata={'order_id': document['order_id'], 'customer_id': document['customer_id']}
 					)
 			except KeyError:
