@@ -2,6 +2,7 @@
 from flask import Flask
 import os
 import sys
+import stripe
 
 from flask_pymongo import PyMongo
 
@@ -26,6 +27,8 @@ except FileNotFoundError:
 	pass
 
 app.mongo = PyMongo(app)
+app.stripe = stripe
+app.stripe.api_key = app.config['STRIPE_SECRET_KEY']
 app.caches = {}
 
 
@@ -69,6 +72,11 @@ Newsletter.define_routes()
 # Token.define_routes()
 # Session.define_routes()
 # User.define_routes()
+
+
+from core.models.subscriptions.subscription import Subscription
+
+Subscription.define_routes()
 
 
 # from core.models.tasks.scheduled import ScheduledTask
