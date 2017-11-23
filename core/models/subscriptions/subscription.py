@@ -129,41 +129,32 @@ with app.app_context():
 
 		@classmethod
 		def create_order_view(cls):
-			# data = cls._get_json_from_request()
+			json = cls._get_json_from_request()
 			header = request.headers['STRIPE_SIGNATURE']
 			event = None
 
 
 			shopify.ShopifyResource.set_site("https://%s:%s@wisecare.myshopify.com/admin" % (app.config['SHOPIFY_API_KEY'], app.config['SHOPIFY_PASSWORD']))
 
-			# try:
-			event = app.stripe.Webhook.construct_event(
-				str(request.data), header, app.config['STRIPE_SUBSCRIPTION_SECRET']
-			)
-			print(event)
+
+			invoice = json['data']['object']
+			print(invoice)
+
+			order = shopify.Order()
+			order.customer = {
+				'id': invoice['subscription']['metadata']['customer_id']
+			}
+			order.send_receipt = True
+			order.use_customer_default_address = True
+			order.line_items = []
+			for line in invoice['lines']['data']:
+				order.append({'title': line['plan']['name'].split(' - ')[0], 'product_id': line['plan']['id'].split('-')[0], 'quantity': line['quantity'], 'price': str(line['amount']/100)})
+			order.note_attributes = [{'invoice_id': invoice['id']}]
+			order.source_name = 'subscriptions'
+
+			print(order.save())
 
 
-				# order = shopify.Order()
-				# order.customer = {
-				# 	'id': invoice['subscription']['metadata']['customer_id']
-				# }
-				# order.send_receipt = True
-				# order.use_customer_default_address = True
-				# order.line_items = [{'title': product.title, 'product_id': product.id, 'quantity': 1, 'price': '32.00'}]
-				# order.line_items = []
-				# for line in invoice['lines']['data']:
-				# 	order.append({'title': product.title, 'product_id': product.id, 'quantity': line['quantity'], 'price': str(line['amount']/100)})
-				# order.note_attributes = [{'invoice_id': invoice['id']}]
-				# order.source_name = 'subscriptions'
-
-				# order.save()
-
-
-			# except ValueError as e:
-			# 	abort(400)
-			
-			# except app.stripe.error.SignatureVerificationError as e:
-			# 	abort(400)
 
 			return cls._format_response({})
 
