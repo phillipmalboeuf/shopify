@@ -11,6 +11,7 @@ from core.helpers.validation_rules import validation_rules
 from bson.objectid import ObjectId
 
 import stripe
+import shopify
 
 
 with app.app_context():
@@ -61,7 +62,7 @@ with app.app_context():
 			{
 				'route': '/create_order',
 				'view_function': 'create_order_view',
-				'methods': ['POST']
+				'methods': ['GET', 'POST']
 			},
 			# {
 			# 	'route': '/<ObjectId:_id>',
@@ -132,11 +133,29 @@ with app.app_context():
 			header = request.headers['STRIPE_SIGNATURE']
 			event = None
 
+
+			shopify.ShopifyResource.set_site("https://%s:%s@wisecare.myshopify.com/admin" % (app.config['SHOPIFY_API_KEY'], app.config['SHOPIFY_PASSWORD']))
+
 			try:
 				event = app.stripe.Webhook.construct_event(
-					request.data, header, app.config['STRIPE_SUBSCRIPTION_SECRET']
+					str(request.data), header, app.config['STRIPE_SUBSCRIPTION_SECRET']
 				)
 				print(event)
+
+
+				# order = shopify.Order()
+				# order.email = 'phil@boeuf.coffee'
+				# order.customer = {
+				# 	'id': '4609241155'
+				# }
+				# order.send_receipt = True
+				# order.use_customer_default_address = True
+				# order.line_items = [{'title': product.title, 'product_id': product.id, 'quantity': 1, 'price': '32.00'}]
+				# order.note_attributes = [{'recurring': '1'}]
+				# order.source_name = 'subscriptions'
+
+				# order.save()
+
 
 			except ValueError as e:
 				abort(400)
@@ -144,7 +163,7 @@ with app.app_context():
 			except app.stripe.error.SignatureVerificationError as e:
 				abort(400)
 
-			return cls._format_response({'event': event})
+			return cls._format_response({})
 
 
 
