@@ -129,7 +129,7 @@ with app.app_context():
 		@classmethod
 		def create_order_view(cls):
 			data = cls._get_json_from_request()
-			header = request.headers['HTTP_STRIPE_SIGNATURE']
+			header = request.headers['STRIPE_SIGNATURE']
 			event = None
 
 			try:
