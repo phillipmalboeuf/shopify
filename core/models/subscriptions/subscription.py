@@ -130,29 +130,24 @@ with app.app_context():
 		@classmethod
 		def create_order_view(cls):
 			json = cls._get_json_from_request()
-			header = request.headers['STRIPE_SIGNATURE']
-			event = None
+			invoice = json['data']['object']
 
 
 			shopify.ShopifyResource.set_site("https://%s:%s@wisecare.myshopify.com/admin" % (app.config['SHOPIFY_API_KEY'], app.config['SHOPIFY_PASSWORD']))
 
-
-			invoice = json['data']['object']
-			print(invoice)
-
 			order = shopify.Order()
 			order.customer = {
-				'id': invoice['subscription']['metadata']['customer_id']
+				'id': invoice['lines']['data'][0]['metadata']['customer_id']
 			}
 			order.send_receipt = True
 			order.use_customer_default_address = True
 			order.line_items = []
 			for line in invoice['lines']['data']:
-				order.append({'title': line['plan']['name'].split(' - ')[0], 'product_id': line['plan']['id'].split('-')[0], 'quantity': line['quantity'], 'price': str(line['amount']/100)})
+				order.line_items.append({'title': line['plan']['name'].split(' - ')[0], 'product_id': line['plan']['id'].split('-')[0], 'quantity': line['quantity'], 'price': str(line['amount']/100)})
 			order.note_attributes = [{'invoice_id': invoice['id']}]
 			order.source_name = 'subscriptions'
 
-			print(order.save())
+			order.save()
 
 
 
