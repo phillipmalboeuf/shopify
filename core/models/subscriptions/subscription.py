@@ -128,13 +128,13 @@ with app.app_context():
 
 		@classmethod
 		def create_order_view(cls):
-			data = cls._get_json_from_request()
+			# data = cls._get_json_from_request()
 			header = request.headers['STRIPE_SIGNATURE']
 			event = None
 
 			try:
 				event = app.stripe.Webhook.construct_event(
-					data, header, app.config['STRIPE_SUBSCRIPTION_SECRET']
+					request.data, header, app.config['STRIPE_SUBSCRIPTION_SECRET']
 				)
 				print(event)
 
