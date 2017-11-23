@@ -10,6 +10,7 @@ from core.helpers.validation_rules import validation_rules
 
 from bson.objectid import ObjectId
 
+import stripe
 
 
 with app.app_context():
@@ -56,6 +57,11 @@ with app.app_context():
 				'route': '/<ObjectId:_id>',
 				'view_function': 'update_view',
 				'methods': ['PATCH', 'PUT']
+			},
+			{
+				'route': '/create_order',
+				'view_function': 'create_order_view',
+				'methods': ['POST']
 			},
 			# {
 			# 	'route': '/<ObjectId:_id>',
@@ -117,6 +123,28 @@ with app.app_context():
 
 
 			return document
+
+
+
+		@classmethod
+		def create_order_view(cls):
+			data = cls._get_json_from_request()
+			header = request.headers['HTTP_STRIPE_SIGNATURE']
+			event = None
+
+			try:
+				event = app.stripe.Webhook.construct_event(
+					data, header, app.config['STRIPE_SUBSCRIPTION_SECRET']
+				)
+				print(event)
+
+			except ValueError as e:
+				abort(400)
+			
+			except app.stripe.error.SignatureVerificationError as e:
+				abort(400)
+
+			return cls._format_response({'event': event})
 
 
 
