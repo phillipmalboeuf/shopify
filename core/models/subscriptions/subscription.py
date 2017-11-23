@@ -136,32 +136,34 @@ with app.app_context():
 
 			shopify.ShopifyResource.set_site("https://%s:%s@wisecare.myshopify.com/admin" % (app.config['SHOPIFY_API_KEY'], app.config['SHOPIFY_PASSWORD']))
 
-			try:
-				event = app.stripe.Webhook.construct_event(
-					str(request.data), header, app.config['STRIPE_SUBSCRIPTION_SECRET']
-				)
-				print(event)
+			# try:
+			event = app.stripe.Webhook.construct_event(
+				str(request.data), header, app.config['STRIPE_SUBSCRIPTION_SECRET']
+			)
+			print(event)
 
 
 				# order = shopify.Order()
-				# order.email = 'phil@boeuf.coffee'
 				# order.customer = {
-				# 	'id': '4609241155'
+				# 	'id': invoice['subscription']['metadata']['customer_id']
 				# }
 				# order.send_receipt = True
 				# order.use_customer_default_address = True
 				# order.line_items = [{'title': product.title, 'product_id': product.id, 'quantity': 1, 'price': '32.00'}]
-				# order.note_attributes = [{'recurring': '1'}]
+				# order.line_items = []
+				# for line in invoice['lines']['data']:
+				# 	order.append({'title': product.title, 'product_id': product.id, 'quantity': line['quantity'], 'price': str(line['amount']/100)})
+				# order.note_attributes = [{'invoice_id': invoice['id']}]
 				# order.source_name = 'subscriptions'
 
 				# order.save()
 
 
-			except ValueError as e:
-				abort(400)
+			# except ValueError as e:
+			# 	abort(400)
 			
-			except app.stripe.error.SignatureVerificationError as e:
-				abort(400)
+			# except app.stripe.error.SignatureVerificationError as e:
+			# 	abort(400)
 
 			return cls._format_response({})
 
